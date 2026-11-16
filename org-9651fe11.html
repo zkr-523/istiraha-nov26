@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوحة المنظمين 🛠️</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0b1020">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛠️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b1020; --card:#161c31; --card2:#1c2340;
+    --text:#f4efe6; --muted:#b8b3a7; --muted2:#8b8778;
+    --amber:#ffb347; --orange:#ff7a1a; --ember:#ff5a2b; --gold:#ffd27a;
+    --ok:#4ade80; --err:#ff6b6b; --line:rgba(255,255,255,.08);
+    --radius:22px; --shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Tajawal",system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100dvh;overflow-x:hidden}
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(60% 45% at 85% -5%, rgba(255,122,26,.3), transparent 70%),
+      radial-gradient(50% 40% at 5% 10%, rgba(255,179,71,.16), transparent 70%),
+      radial-gradient(70% 50% at 50% 110%, rgba(255,90,43,.2), transparent 70%),
+      linear-gradient(180deg,#0b1020,#10152a 50%,#0b1020)}
+  .grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+  main{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:22px 18px 60px}
+
+  header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  h1{font-size:clamp(1.5rem,6vw,2rem);font-weight:900}
+  .live{display:inline-flex;align-items:center;gap:8px;background:rgba(255,90,43,.1);border:1px solid rgba(255,90,43,.35);color:#ffb3a3;padding:6px 12px;border-radius:999px;font-weight:800;font-size:.9rem}
+  .live .dot{width:9px;height:9px;border-radius:50%;background:var(--ember);animation:pulse 1.6s infinite}
+  .live.paused{opacity:.55}.live.paused .dot{animation:none;background:var(--muted2)}
+  .live.err{border-color:rgba(255,107,107,.4);color:#ffb3b3}.live.err .dot{background:var(--err)}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,90,43,.7)}70%{box-shadow:0 0 0 9px rgba(255,90,43,0)}100%{box-shadow:0 0 0 0 rgba(255,90,43,0)}}
+
+  .card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden;margin-bottom:16px}
+  .card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,210,122,.45),transparent 40%,transparent 60%,rgba(255,122,26,.35));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+
+  .counter{text-align:center;padding:26px 16px 22px}
+  .counter .num{font-size:clamp(4.5rem,22vw,7rem);font-weight:900;line-height:1;color:#fff;
+    background:linear-gradient(135deg,#fff,var(--gold) 50%,var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 6px 30px rgba(255,122,26,.35));font-variant-numeric:tabular-nums;display:inline-block;transition:transform .3s cubic-bezier(.2,.9,.3,1.4)}
+  .counter .num.bump{animation:bump .6s cubic-bezier(.2,.9,.3,1.4)}
+  @keyframes bump{0%{transform:scale(1)}35%{transform:scale(1.18)}100%{transform:scale(1)}}
+  .counter .words{font-size:clamp(1.2rem,5vw,1.6rem);font-weight:800;margin-top:6px}
+  .counter .sub{color:var(--muted);font-size:.95rem;margin-top:4px}
+
+  .status{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+  .chip{background:rgba(255,255,255,.05);border:1px solid var(--line);padding:8px 14px;border-radius:14px;font-weight:700;font-size:.95rem}
+  .chip.open{border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.08);color:#b9f5cd}
+  .chip.closed{border-color:rgba(255,107,107,.35);background:rgba(255,107,107,.08);color:#ffb3b3}
+  .chip b{color:var(--gold)}
+
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .btn{appearance:none;border:0;cursor:pointer;font-family:inherit;font-weight:800;font-size:1.05rem;color:#1a0f00;
+    background:linear-gradient(135deg,var(--gold),var(--orange));padding:14px 22px;border-radius:999px;flex:1;min-width:140px;
+    box-shadow:0 10px 30px rgba(255,122,26,.35),inset 0 1px 0 rgba(255,255,255,.5);transition:transform .15s,box-shadow .15s;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .btn:hover{transform:translateY(-2px)}.btn:active{transform:scale(.98)}
+  .btn.ghost{background:transparent;color:var(--gold);border:1.5px solid rgba(255,210,122,.4);box-shadow:none;flex:0 0 auto}
+  .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+  .list-head{display:flex;align-items:baseline;justify-content:space-between;margin:6px 4px 12px}
+  .list-head h2{font-size:1.35rem;font-weight:900}
+  .list-head span{color:var(--muted2);font-size:.9rem}
+  .list{display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:16px;padding:10px 12px;transition:background .2s}
+  .row:hover{background:rgba(255,255,255,.07)}
+  .row.new{animation:slidein .55s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes slidein{from{opacity:0;transform:translateX(30px) scale(.97)}to{opacity:1;transform:none}}
+  .row .n{color:var(--muted2);font-weight:800;min-width:26px;text-align:center;font-variant-numeric:tabular-nums}
+  .avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:1.25rem;color:#fff;flex:0 0 auto;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2),0 4px 12px rgba(0,0,0,.3)}
+  .row .name{flex:1;font-weight:800;font-size:1.12rem;word-break:break-word}
+  .row .time{color:var(--muted2);font-size:.85rem;font-weight:700;white-space:nowrap}
+  .empty{text-align:center;color:var(--muted);padding:26px 10px}
+  .empty .big{font-size:2.6rem}
+
+  .skel{height:66px;border-radius:16px;background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.09),rgba(255,255,255,.04));background-size:200% 100%;animation:sh 1.3s infinite}
+  @keyframes sh{from{background-position:200% 0}to{background-position:-200% 0}}
+
+  .noaccess{text-align:center;padding:40px 16px}
+  .noaccess .big{font-size:4rem}
+  .noaccess h2{font-size:1.6rem;font-weight:900;margin-top:8px}
+  .noaccess p{color:var(--muted);margin-top:6px}
+  .hidden{display:none!important}
+
+  .toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,100px);background:#1f2740;border:1px solid rgba(255,210,122,.4);color:var(--gold);padding:12px 20px;border-radius:999px;font-weight:800;box-shadow:var(--shadow);transition:transform .3s cubic-bezier(.2,.9,.3,1.2);z-index:9}
+  .toast.show{transform:translate(-50%,0)}
+  .footer{text-align:center;color:var(--muted2);font-size:.85rem;margin-top:26px}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="glow"></div><div class="grain"></div>
+<main>
+  <header>
+    <h1>لوحة المنظمين 🛠️</h1>
+    <div class="live paused" id="live"><span class="dot"></span><span id="liveTxt">مباشر 🔴</span></div>
+  </header>
+
+  <!-- no access -->
+  <div class="card noaccess hidden" id="noAccess">
+    <div class="big">🔒</div>
+    <h2>ما عندك صلاحية 🔒</h2>
+    <p>افتح الرابط الخاص بالمنظمين اللي فيه المفتاح</p>
+  </div>
+
+  <div id="dash">
+    <div class="card counter">
+      <div class="num" id="count">٠</div>
+      <div class="words" id="countWords">…</div>
+      <div class="sub" id="updated">جاري التحميل…</div>
+      <div class="status">
+        <div class="chip" id="openChip">⏳ …</div>
+        <div class="chip" id="deadlineChip">⭕ <b>…</b></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="copyBtn" disabled>نسخ القائمة 📋</button>
+      <button class="btn ghost" id="refreshBtn" title="تحديث">🔄</button>
+    </div>
+
+    <div class="list-head">
+      <h2>المسجلين</h2>
+      <span id="orderNote">بترتيب التسجيل</span>
+    </div>
+    <div class="list" id="list">
+      <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+    </div>
+    <div class="footer">تتحدث اللوحة تلقائياً كل ١٠ ثواني ⏱️ · الأوقات بتوقيت الرياض</div>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const API_URL = '__API_URL__';
+const DEADLINE_AT = Date.parse('2026-11-18T23:59:59+03:00');
+const KEY_STORE = 'istiraha_admin_key';
+const POLL_MS = 10000;
+
+const $ = (s) => document.querySelector(s);
+const AR_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+const ar = (n) => String(n).replace(/\d/g, (d) => AR_DIGITS[d]);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- key from hash / storage ---------- */
+function getKey() {
+  const m = location.hash.match(/key=([A-Za-z0-9]+)/);
+  if (m) { try { localStorage.setItem(KEY_STORE, m[1]); } catch (e) {} return m[1]; }
+  try { return localStorage.getItem(KEY_STORE) || ''; } catch (e) { return ''; }
+}
+const KEY = getKey();
+
+/* ---------- arabic grammar ---------- */
+function countWords(n) {
+  if (n === 0) return 'لسا ما أحد سجّل';
+  if (n === 1) return 'شخص واحد';
+  if (n === 2) return 'شخصين';
+  if (n <= 10) return ar(n) + ' أشخاص';
+  return ar(n) + ' شخص';
+}
+function dayWord(n){ return n === 1 ? 'يوم' : n === 2 ? 'يومين' : (n >= 3 && n <= 10) ? ar(n) + ' أيام' : ar(n) + ' يوم'; }
+function hourWord(n){ return n === 1 ? 'ساعة' : n === 2 ? 'ساعتين' : (n >= 3 && n <= 10) ? ar(n) + ' ساعات' : ar(n) + ' ساعة'; }
+function minWord(n){ return n === 1 ? 'دقيقة' : n === 2 ? 'دقيقتين' : (n >= 3 && n <= 10) ? ar(n) + ' دقايق' : ar(n) + ' دقيقة'; }
+
+/* ---------- time formatting (Riyadh) ---------- */
+const fmtTime = new Intl.DateTimeFormat('ar-EG-u-nu-arab', { timeZone: 'Asia/Riyadh', weekday: 'long', hour: 'numeric', minute: '2-digit', hour12: true });
+function fmt(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return '';
+  return fmtTime.format(d).replace(/،/g, '').replace(/\s+/g, ' ');
+}
+
+/* ---------- avatar color from name ---------- */
+function hue(str) { let h = 0; for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0; return h % 360; }
+function avatarStyle(name) { const h = hue(name); return `background:linear-gradient(135deg,hsl(${h} 70% 48%),hsl(${(h + 40) % 360} 70% 38%))`; }
+
+/* ---------- state ---------- */
+let names = [];
+let known = new Set();
+let lastCount = 0, firstLoad = true, timer = null, lastOk = 0, failures = 0;
+const countEl = $('#count'), live = $('#live'), liveTxt = $('#liveTxt'), list = $('#list');
+
+function animateCount(from, to) {
+  if (reduced || from === to) { countEl.textContent = ar(to); return; }
+  const dur = 700, t0 = performance.now();
+  (function step(t) {
+    const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    countEl.textContent = ar(Math.round(from + (to - from) * e));
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+  if (to > from) { countEl.classList.remove('bump'); void countEl.offsetWidth; countEl.classList.add('bump'); }
+}
+
+function render(data) {
+  const n = data.names.length;
+  animateCount(lastCount, n);
+  lastCount = n;
+  $('#countWords').textContent = countWords(n);
+  $('#copyBtn').disabled = n === 0;
+  $('#openChip').textContent = data.closed ? '🔒 التسجيل مقفل' : '✅ التسجيل مفتوح';
+  $('#openChip').className = 'chip ' + (data.closed ? 'closed' : 'open');
+
+  list.innerHTML = '';
+  if (n === 0) {
+    list.innerHTML = '<div class="empty"><div class="big">🦗</div>لسا ما أحد سجّل… انشر الرابط في القروب 📲</div>';
+  } else {
+    data.names.forEach((p, i) => {
+      const row = document.createElement('div');
+      const id = p.name + '|' + p.time;
+      row.className = 'row' + (!firstLoad && !known.has(id) ? ' new' : '');
+      const av = document.createElement('div'); av.className = 'avatar'; av.style.cssText = avatarStyle(p.name); av.textContent = p.name.trim().charAt(0);
+      const num = document.createElement('div'); num.className = 'n'; num.textContent = ar(i + 1);
+      const nm = document.createElement('div'); nm.className = 'name'; nm.textContent = p.name;
+      const tm = document.createElement('div'); tm.className = 'time'; tm.textContent = fmt(p.time);
+      row.append(num, av, nm, tm);
+      list.appendChild(row);
+    });
+  }
+  known = new Set(data.names.map(p => p.name + '|' + p.time));
+  names = data.names;
+  firstLoad = false;
+}
+
+function setLive(state) {
+  live.className = 'live ' + state;
+  liveTxt.textContent = state === 'err' ? 'النت معلّق 😅' : state === 'paused' ? 'موقّف مؤقتاً ⏸' : 'مباشر 🔴';
+}
+
+async function load() {
+  if (!KEY) { showNoAccess(); return; }
+  try {
+    const r = await fetch(API_URL + (API_URL.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(KEY) + '&_=' + Date.now(), { cache: 'no-store' });
+    const data = await r.json();
+    if (!data || !Array.isArray(data.names)) { showNoAccess(); return; }
+    render(data);
+    lastOk = Date.now(); failures = 0;
+    setLive(document.hidden ? 'paused' : 'on');
+    updatedTick();
+  } catch (err) {
+    failures++;
+    setLive('err');
+    $('#updated').textContent = 'ما قدرنا نحدّث… نعيد المحاولة 🔁';
+    if (firstLoad) list.innerHTML = '<div class="empty">النت معلّق شوي 😅 نعيد المحاولة…</div>';
+    clearTimeout(timer);
+    timer = setTimeout(load, Math.min(30000, 3000 * failures));
+    return;
+  }
+  schedule();
+}
+function schedule() { clearTimeout(timer); if (!document.hidden) timer = setTimeout(load, POLL_MS); }
+function showNoAccess() { $('#dash').classList.add('hidden'); $('#noAccess').classList.remove('hidden'); live.classList.add('hidden'); clearTimeout(timer); }
+
+function updatedTick() {
+  if (!lastOk) return;
+  const s = Math.round((Date.now() - lastOk) / 1000);
+  $('#updated').textContent = s < 5 ? 'محدّث الحين ✨' : 'آخر تحديث قبل ' + ar(s) + ' ثانية';
+}
+setInterval(updatedTick, 1000);
+
+/* deadline countdown chip */
+function deadlineTick() {
+  const dl = DEADLINE_AT - Date.now();
+  const el = $('#deadlineChip');
+  if (dl <= 0) { el.innerHTML = '🔒 <b>خلص التسجيل</b>'; return; }
+  const d = Math.floor(dl / 864e5), h = Math.floor(dl / 36e5) % 24, m = Math.floor(dl / 6e4) % 60;
+  const parts = [];
+  if (d) parts.push(dayWord(d));
+  if (h) parts.push(hourWord(h));
+  if (!d) parts.push(minWord(m));
+  el.innerHTML = '⭕ يقفل بعد <b>' + parts.join(' و ') + '</b>';
+}
+deadlineTick(); setInterval(deadlineTick, 30000);
+
+/* visibility: pause/resume polling */
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { clearTimeout(timer); if (KEY) setLive('paused'); }
+  else { load(); }
+});
+
+/* copy list */
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 2200); }
+$('#copyBtn').addEventListener('click', async () => {
+  const text = names.map((p, i) => (i + 1) + '. ' + p.name).join('\n');
+  try { await navigator.clipboard.writeText(text); toast('تم النسخ ✅ الصقها في الواتساب'); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast('تم النسخ ✅'); } catch (e2) { toast('ما قدرنا ننسخ 😅'); }
+    ta.remove();
+  }
+});
+$('#refreshBtn').addEventListener('click', () => { clearTimeout(timer); load(); });
+
+load();
+</script>
+</body>
+</html>
